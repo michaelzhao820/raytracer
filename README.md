@@ -6,7 +6,7 @@ A Go implementation of the ray tracer described in [The Ray Tracer Challenge](ht
 
 - [x] Chapter 1 - Tuples, Points, and Vectors
 - [x] Chapter 2 - Drawing on a Canvas
-- [ ] Chapter 3 - Matrices
+- [X] Chapter 3 - Matrices
 - [ ] Chapter 4 - Matrix Transformations
 - [ ] Chapter 5 - Ray-Sphere Intersections
 - [ ] Chapter 6 - Light and Shading
