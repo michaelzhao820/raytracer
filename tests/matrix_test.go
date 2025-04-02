@@ -556,3 +556,326 @@ func TestMatrixInverse(t *testing.T) {
 		}
 	})
 }
+
+func TestTranslationMatrix(t *testing.T) {
+	// Scenario: Multiplying by a translation matrix
+	t.Run("Multiplying by translation matrix", func(t *testing.T) {
+		transform, err := TranslationMatrix(5, -3, 2)
+		if err != nil {
+			t.Fatalf("Failed to create translation matrix: %v", err)
+		}
+
+		p := NewPoint(-3, 4, 5)
+
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+
+		expected := NewPoint(2, 1, 7)
+
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: Multiplying by the inverse of a translation matrix
+	t.Run("Multiplying by inverse of translation matrix", func(t *testing.T) {
+		transform, err := TranslationMatrix(5, -3, 2)
+		if err != nil {
+			t.Fatalf("Failed to create translation matrix: %v", err)
+		}
+
+		inv, err := transform.Inverse()
+		if err != nil {
+			t.Fatalf("Failed to invert translation matrix: %v", err)
+		}
+
+		p := NewPoint(-3, 4, 5)
+
+		result, err := inv.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+
+		expected := NewPoint(-8, 7, 3)
+
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: Translation does not affect vectors
+	t.Run("Translation does not change vectors", func(t *testing.T) {
+		transform, err := TranslationMatrix(5, -3, 2)
+		if err != nil {
+			t.Fatalf("Failed to create translation matrix: %v", err)
+		}
+
+		v := NewVector(-3, 4, 5)
+
+		result, err := transform.MultiplyWithTuple(v)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with vector: %v", err)
+		}
+
+		if !result.Equals(v) {
+			t.Errorf("Expected vector to remain unchanged, got %v", result)
+		}
+	})
+}
+
+func TestScalingMatrix(t *testing.T) {
+	// Scenario: A scaling matrix applied to a point
+	t.Run("Scaling matrix applied to a point", func(t *testing.T) {
+		transform, err := ScalingMatrix(2, 3, 4)
+		if err != nil {
+			t.Fatalf("Failed to create scaling matrix: %v", err)
+		}
+
+		p := NewPoint(-4, 6, 8)
+
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+
+		expected := NewPoint(-8, 18, 32)
+
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: A scaling matrix applied to a vector
+	t.Run("Scaling matrix applied to a vector", func(t *testing.T) {
+		transform, err := ScalingMatrix(2, 3, 4)
+		if err != nil {
+			t.Fatalf("Failed to create scaling matrix: %v", err)
+		}
+
+		v := NewVector(-4, 6, 8)
+
+		result, err := transform.MultiplyWithTuple(v)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with vector: %v", err)
+		}
+
+		expected := NewVector(-8, 18, 32)
+
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: Multiplying by the inverse of a scaling matrix
+	t.Run("Multiplying by inverse of scaling matrix", func(t *testing.T) {
+		transform, err := ScalingMatrix(2, 3, 4)
+		if err != nil {
+			t.Fatalf("Failed to create scaling matrix: %v", err)
+		}
+
+		inv, err := transform.Inverse()
+		if err != nil {
+			t.Fatalf("Failed to invert scaling matrix: %v", err)
+		}
+
+		v := NewVector(-4, 6, 8)
+
+		result, err := inv.MultiplyWithTuple(v)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with vector: %v", err)
+		}
+
+		expected := NewVector(-2, 2, 2)
+
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+}
+
+func TestRotationMatrices(t *testing.T) {
+	// Scenario: Rotating a point around the x-axis
+	t.Run("Rotation around x-axis", func(t *testing.T) {
+		p := NewPoint(0, 1, 0)
+		halfQuarter, err := RotationXMatrix(math.Pi / 4)
+		if err != nil {
+			t.Fatalf("Failed to create rotation matrix: %v", err)
+		}
+		inv, err := halfQuarter.Inverse()
+		if err != nil {
+			t.Fatalf("Failed to invert rotation matrix: %v", err)
+		}
+		result, err := inv.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(0, math.Sqrt(2)/2, -math.Sqrt(2)/2)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: Rotating a point around the y-axis
+	t.Run("Rotation around y-axis", func(t *testing.T) {
+		p := NewPoint(0, 0, 1)
+		halfQuarter, err := RotationYMatrix(math.Pi / 4)
+		if err != nil {
+			t.Fatalf("Failed to create rotation matrix: %v", err)
+		}
+		fullQuarter, err := RotationYMatrix(math.Pi / 2)
+		if err != nil {
+			t.Fatalf("Failed to create rotation matrix: %v", err)
+		}
+		resultHalf, err := halfQuarter.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expectedHalf := NewPoint(math.Sqrt(2)/2, 0, math.Sqrt(2)/2)
+		if !resultHalf.Equals(expectedHalf) {
+			t.Errorf("Expected %v, got %v", expectedHalf, resultHalf)
+		}
+		resultFull, err := fullQuarter.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expectedFull := NewPoint(1, 0, 0)
+		if !resultFull.Equals(expectedFull) {
+			t.Errorf("Expected %v, got %v", expectedFull, resultFull)
+		}
+	})
+
+	// Scenario: Rotating a point around the z-axis
+	t.Run("Rotation around z-axis", func(t *testing.T) {
+		p := NewPoint(0, 1, 0)
+		halfQuarter, err := RotationZMatrix(math.Pi / 4)
+		if err != nil {
+			t.Fatalf("Failed to create rotation matrix: %v", err)
+		}
+		fullQuarter, err := RotationZMatrix(math.Pi / 2)
+		if err != nil {
+			t.Fatalf("Failed to create rotation matrix: %v", err)
+		}
+		resultHalf, err := halfQuarter.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expectedHalf := NewPoint(-math.Sqrt(2)/2, math.Sqrt(2)/2, 0)
+		if !resultHalf.Equals(expectedHalf) {
+			t.Errorf("Expected %v, got %v", expectedHalf, resultHalf)
+		}
+		resultFull, err := fullQuarter.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expectedFull := NewPoint(-1, 0, 0)
+		if !resultFull.Equals(expectedFull) {
+			t.Errorf("Expected %v, got %v", expectedFull, resultFull)
+		}
+	})
+}
+
+func TestShearingMatrix(t *testing.T) {
+	// Scenario: A shearing transformation moves x in proportion to y
+	t.Run("Shearing x in proportion to y", func(t *testing.T) {
+		transform, err := ShearingMatrix(1, 0, 0, 0, 0, 0)
+		if err != nil {
+			t.Fatalf("Failed to create shearing matrix: %v", err)
+		}
+		p := NewPoint(2, 3, 4)
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(5, 3, 4)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: A shearing transformation moves x in proportion to z
+	t.Run("Shearing x in proportion to z", func(t *testing.T) {
+		transform, err := ShearingMatrix(0, 1, 0, 0, 0, 0)
+		if err != nil {
+			t.Fatalf("Failed to create shearing matrix: %v", err)
+		}
+		p := NewPoint(2, 3, 4)
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(6, 3, 4)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: A shearing transformation moves y in proportion to x
+	t.Run("Shearing y in proportion to x", func(t *testing.T) {
+		transform, err := ShearingMatrix(0, 0, 1, 0, 0, 0)
+		if err != nil {
+			t.Fatalf("Failed to create shearing matrix: %v", err)
+		}
+		p := NewPoint(2, 3, 4)
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(2, 5, 4)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: A shearing transformation moves y in proportion to z
+	t.Run("Shearing y in proportion to z", func(t *testing.T) {
+		transform, err := ShearingMatrix(0, 0, 0, 1, 0, 0)
+		if err != nil {
+			t.Fatalf("Failed to create shearing matrix: %v", err)
+		}
+		p := NewPoint(2, 3, 4)
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(2, 7, 4)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: A shearing transformation moves z in proportion to x
+	t.Run("Shearing z in proportion to x", func(t *testing.T) {
+		transform, err := ShearingMatrix(0, 0, 0, 0, 1, 0)
+		if err != nil {
+			t.Fatalf("Failed to create shearing matrix: %v", err)
+		}
+		p := NewPoint(2, 3, 4)
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(2, 3, 6)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+
+	// Scenario: A shearing transformation moves z in proportion to y
+	t.Run("Shearing z in proportion to y", func(t *testing.T) {
+		transform, err := ShearingMatrix(0, 0, 0, 0, 0, 1)
+		if err != nil {
+			t.Fatalf("Failed to create shearing matrix: %v", err)
+		}
+		p := NewPoint(2, 3, 4)
+		result, err := transform.MultiplyWithTuple(p)
+		if err != nil {
+			t.Fatalf("Failed to multiply matrix with point: %v", err)
+		}
+		expected := NewPoint(2, 3, 7)
+		if !result.Equals(expected) {
+			t.Errorf("Expected %v, got %v", expected, result)
+		}
+	})
+}

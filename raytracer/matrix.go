@@ -1,6 +1,9 @@
 package raytracer
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type Matrix struct {
 	width  int
@@ -142,6 +145,97 @@ func (m Matrix) Inverse() (Matrix, error) {
 
 	newMatrix, _ = newMatrix.Transpose()
 	return newMatrix, nil
+}
+
+func TranslationMatrix(args ...float64) (Matrix, error) {
+	dimension := len(args) + 1
+	n := NewMatrix(dimension, dimension)
+	for i := 0; i < dimension; i++ {
+		n, _ = n.Set(i, i, 1.0)
+	}
+	for i := 0; i < dimension-1; i++ {
+		n, _ = n.Set(i, dimension-1, args[i])
+	}
+	return n, nil
+}
+
+func ScalingMatrix(args ...float64) (Matrix, error) {
+	dimension := len(args) + 1
+	n := NewMatrix(dimension, dimension)
+
+	for i := 0; i < len(args); i++ {
+		n, _ = n.Set(i, i, args[i])
+	}
+	n, _ = n.Set(dimension-1, dimension-1, 1.0)
+
+	return n, nil
+}
+
+// RotationXMatrix
+// All the rotation matrices that follow will be 4x4. 3D Shapes being rendered, no need
+// for matrices of higher dimensions.
+// /*
+func RotationXMatrix(rotationInRadians float64) (Matrix, error) {
+	n := NewMatrix(4, 4)
+
+	// Set the constant elements
+	n, _ = n.Set(0, 0, 1.0)
+	n, _ = n.Set(3, 3, 1.0)
+
+	// Set the elements that depend on the rotation angle
+	n, _ = n.Set(1, 1, math.Cos(rotationInRadians))
+	n, _ = n.Set(1, 2, -math.Sin(rotationInRadians))
+	n, _ = n.Set(2, 1, math.Sin(rotationInRadians))
+	n, _ = n.Set(2, 2, math.Cos(rotationInRadians))
+
+	return n, nil
+}
+
+func RotationYMatrix(rotationInRadians float64) (Matrix, error) {
+	n := NewMatrix(4, 4)
+
+	n, _ = n.Set(1, 1, 1.0)
+	n, _ = n.Set(3, 3, 1.0)
+
+	// Set the elements that depend on the rotation angle
+	n, _ = n.Set(0, 0, math.Cos(rotationInRadians))
+	n, _ = n.Set(0, 2, math.Sin(rotationInRadians))
+	n, _ = n.Set(2, 0, -math.Sin(rotationInRadians))
+	n, _ = n.Set(2, 2, math.Cos(rotationInRadians))
+
+	return n, nil
+
+}
+
+func RotationZMatrix(rotationInRadians float64) (Matrix, error) {
+	n := NewMatrix(4, 4)
+
+	n, _ = n.Set(2, 2, 1.0)
+	n, _ = n.Set(3, 3, 1.0)
+
+	n, _ = n.Set(0, 0, math.Cos(rotationInRadians))
+	n, _ = n.Set(0, 1, -math.Sin(rotationInRadians))
+	n, _ = n.Set(1, 0, math.Sin(rotationInRadians))
+	n, _ = n.Set(1, 1, math.Cos(rotationInRadians))
+
+	return n, nil
+}
+
+func ShearingMatrix(xy, xz, yx, yz, zx, zy float64) (Matrix, error) {
+	m := NewMatrix(4, 4)
+	for i := 0; i < m.height; i++ {
+		m, _ = m.Set(i, i, 1.0)
+	}
+
+	m, _ = m.Set(0, 1, xy)
+	m, _ = m.Set(0, 2, xz)
+	m, _ = m.Set(1, 0, yx)
+	m, _ = m.Set(1, 2, yz)
+	m, _ = m.Set(2, 0, zx)
+	m, _ = m.Set(2, 1, zy)
+
+	return m, nil
+
 }
 
 func (m Matrix) determinantOf2x2() (float64, error) {
