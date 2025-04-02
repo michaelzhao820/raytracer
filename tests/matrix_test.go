@@ -148,7 +148,7 @@ func TestMatrixEquality(t *testing.T) {
 					5, 4, 3, 2,
 				}
 				for i, val := range testData {
-					m.Set(i/4, i%4, val)
+					m, _ = m.Set(i/4, i%4, val)
 				}
 				return m
 			}(),
@@ -161,7 +161,7 @@ func TestMatrixEquality(t *testing.T) {
 					5, 4, 3, 2,
 				}
 				for i, val := range testData {
-					m.Set(i/4, i%4, val)
+					m, _ = m.Set(i/4, i%4, val)
 				}
 				return m
 			}(),
@@ -208,7 +208,7 @@ func TestMatrixEquality(t *testing.T) {
 					4, 3, 2, 1,
 				}
 				for i, val := range testData {
-					m.Set(i/4, i%4, val)
+					m, _ = m.Set(i/4, i%4, val)
 				}
 				return m
 			}(),

@@ -105,7 +105,7 @@ func (m Matrix) MultiplyByIdentity() (Matrix, error) {
 
 	n := NewMatrix(m.height, m.height)
 	for i := 0; i < n.width; i++ {
-		n.Set(i, i, 1.0)
+		n, _ = n.Set(i, i, 1.0)
 	}
 	k, _ := m.MultiplyMatrices(n)
 	return k, nil
