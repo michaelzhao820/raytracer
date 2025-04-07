@@ -2,38 +2,68 @@ package main
 
 import (
 	. "github.com/michaelzhao820/raytracer/raytracer"
-	"math"
-)
-
-const (
-	TotalHours = 12
 )
 
 func main() {
 
-	canvasSize := 500
-	c := NewCanvas(canvasSize, canvasSize)
+	rayOrigin := NewPoint(0, 0, -5)
 
-	clockRadius := float64(canvasSize) * 3 / 8
-	centerX := canvasSize / 2
-	centerY := canvasSize / 2
+	wallZPosition := 10.0
+	wallSize := 7.0
+	half := wallSize / 2
 
-	p := NewPoint(0, 0, 1)
+	canvasPixels := 100
+	c := NewCanvas(canvasPixels, canvasPixels)
 
-	for i := 0; i < TotalHours; i++ {
-		r, _ := RotationYMatrix(math.Pi / 6 * float64(i))
-		n, _ := r.MultiplyWithTuple(p)
+	pixelSize := wallSize / float64(canvasPixels)
 
-		scaledX := n[X] * clockRadius
-		scaledZ := n[Z] * clockRadius
+	shape := NewSphere()
 
-		c.WritePixel(centerX+int(scaledX), centerY+int(scaledZ), NewColor(1, 0, 0))
+	for y := 0; y < canvasPixels; y++ {
+		for x := 0; x < canvasPixels; x++ {
+			worldX := -half + pixelSize*float64(x)
+			worldY := half - pixelSize*float64(y)
+			position := NewPoint(
+				worldX,
+				worldY,
+				wallZPosition,
+			)
+			direction, _ := position.Subtract(rayOrigin)
+			direction, _ = direction.Normalize()
+			r := NewRay(rayOrigin, direction)
+			xs := r.Intersect(shape)
+			if Hit(xs) != nil {
+				c.WritePixel(x, y, NewColor(1, 0, 0))
+			}
+		}
 	}
 
-	err := c.CanvasToPPM("clock.ppm")
-	if err != nil {
-		return
-	}
+	/*
+		canvasPixels := 500
+		c := NewCanvas(canvasPixels, canvasPixels)
+
+		clockRadius := float64(canvasPixels) * 3 / 8
+		centerX := canvasPixels / 2
+		centerY := canvasPixels / 2
+
+		p := NewPoint(0, 0, 1)
+
+		for i := 0; i < TotalHours; i++ {
+			r, _ := RotationYMatrix(math.Pi / 6 * float64(i))
+			n, _ := r.MultiplyWithTuple(p)
+
+			scaledX := n[X] * clockRadius
+			scaledZ := n[Z] * clockRadius
+
+			c.WritePixel(centerX+int(scaledX), centerY+int(scaledZ), NewColor(1, 0, 0))
+		}
+
+		err := c.CanvasToPPM("clock.ppm")
+		if err != nil {
+			return
+		}
+	*/
+
 	/*
 		projectile := struct {
 			position Tuple

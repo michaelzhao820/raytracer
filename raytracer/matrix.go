@@ -147,6 +147,15 @@ func (m Matrix) Inverse() (Matrix, error) {
 	return newMatrix, nil
 }
 
+func IdentityMatrix() Matrix {
+	n := NewMatrix(4, 4)
+	n, _ = n.Set(0, 0, 1)
+	n, _ = n.Set(1, 1, 1)
+	n, _ = n.Set(2, 2, 1)
+	n, _ = n.Set(3, 3, 1)
+	return n
+}
+
 func TranslationMatrix(args ...float64) (Matrix, error) {
 	dimension := len(args) + 1
 	n := NewMatrix(dimension, dimension)
