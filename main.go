@@ -2,6 +2,7 @@ package main
 
 import (
 	. "github.com/michaelzhao820/raytracer/raytracer"
+	"math"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 	pixelSize := wallSize / float64(canvasPixels)
 
 	shape := NewSphere()
+	s, _ := ScalingMatrix(0.5, 1, 1)
+	ry, _ := RotationZMatrix(math.Pi / 4)
+	t, _ := ry.MultiplyMatrices(s)
+	shape.SetTransform(t)
 
 	for y := 0; y < canvasPixels; y++ {
 		for x := 0; x < canvasPixels; x++ {
@@ -36,6 +41,10 @@ func main() {
 				c.WritePixel(x, y, NewColor(1, 0, 0))
 			}
 		}
+	}
+	err := c.CanvasToPPM("sphere.ppm")
+	if err != nil {
+		return
 	}
 
 	/*
