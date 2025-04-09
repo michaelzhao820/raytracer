@@ -158,6 +158,12 @@ func Cross(a, b Tuple) (Tuple, error) {
 	), nil
 }
 
+func Reflect(in, normal Tuple) (Tuple, error) {
+	d, _ := Dot(in, normal)
+	in, _ = in.Subtract(normal.Multiply(2).Multiply(d))
+	return in, nil
+}
+
 func equalsWithMargin(a, b float64) bool {
 	epsilon := 0.00001
 	if math.Abs(a-b) < epsilon {

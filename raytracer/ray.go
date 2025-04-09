@@ -8,12 +8,22 @@ type Ray struct {
 }
 
 type Shape interface {
-	transformMatrix() Matrix
+	GetTransformMatrix() Matrix
+	NormalAt(x Tuple) Tuple
+	GetMaterial() *Material
 }
 
 type Intersection struct {
 	t float64
 	o Shape
+}
+
+func (i Intersection) GetTime() float64 {
+	return i.t
+}
+
+func (i Intersection) GetObject() Shape {
+	return i.o
 }
 
 func NewRay(origin, direction Tuple) Ray {
@@ -41,7 +51,7 @@ func Hit(args []Intersection) *Intersection {
 }
 
 func (r Ray) Intersect(s Shape) []Intersection {
-	m, _ := s.transformMatrix().Inverse()
+	m, _ := s.GetTransformMatrix().Inverse()
 	r2 := r.Transform(m)
 	sphereToRay, _ := r2.origin.Subtract(NewPoint(0, 0, 0))
 	a, _ := Dot(r2.Direction(), r2.Direction())

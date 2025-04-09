@@ -400,3 +400,27 @@ func TestCross(t *testing.T) {
 		t.Error("Expected error when computing cross product with a point, but got nil")
 	}
 }
+
+func TestReflect(t *testing.T) {
+	t.Run("Reflecting a vector approaching at 45°", func(t *testing.T) {
+		v := NewVector(1, -1, 0)
+		n := NewVector(0, 1, 0)
+		r, _ := Reflect(v, n)
+		expected := NewVector(1, 1, 0)
+
+		if !r.Equals(expected) {
+			t.Errorf("Expected %v but got %v", expected, r)
+		}
+	})
+
+	t.Run("Reflecting a vector off a slanted surface", func(t *testing.T) {
+		v := NewVector(0, -1, 0)
+		n := NewVector(math.Sqrt(2)/2, math.Sqrt(2)/2, 0)
+		r, _ := Reflect(v, n)
+		expected := NewVector(1, 0, 0)
+
+		if !r.Equals(expected) {
+			t.Errorf("Expected %v but got %v", expected, r)
+		}
+	})
+}

@@ -2,7 +2,6 @@ package main
 
 import (
 	. "github.com/michaelzhao820/raytracer/raytracer"
-	"math"
 )
 
 func main() {
@@ -19,10 +18,12 @@ func main() {
 	pixelSize := wallSize / float64(canvasPixels)
 
 	shape := NewSphere()
-	s, _ := ScalingMatrix(0.5, 1, 1)
-	ry, _ := RotationZMatrix(math.Pi / 4)
-	t, _ := ry.MultiplyMatrices(s)
-	shape.SetTransform(t)
+	shape.GetMaterial().SetColor(1, 0.2, 1)
+
+	light := Light{
+		Position:  NewPoint(-10, 10, -10),
+		Intensity: NewColor(1, 1, 1),
+	}
 
 	for y := 0; y < canvasPixels; y++ {
 		for x := 0; x < canvasPixels; x++ {
@@ -37,8 +38,14 @@ func main() {
 			direction, _ = direction.Normalize()
 			r := NewRay(rayOrigin, direction)
 			xs := r.Intersect(shape)
-			if Hit(xs) != nil {
-				c.WritePixel(x, y, NewColor(1, 0, 0))
+			hit := Hit(xs)
+			if hit != nil {
+				point, _ := r.Position(hit.GetTime())
+				normal := hit.GetObject().NormalAt(point)
+				eye := r.Direction().Multiply(-1)
+
+				color := Lighting(*hit.GetObject().GetMaterial(), light, point, eye, normal)
+				c.WritePixel(x, y, color)
 			}
 		}
 	}
