@@ -9,7 +9,7 @@ A Go implementation of the ray tracer described in [The Ray Tracer Challenge](ht
 - [X] Chapter 3 - Matrices
 - [X] Chapter 4 - Matrix Transformations
 - [X] Chapter 5 - Ray-Sphere Intersections
-- [ ] Chapter 6 - Light and Shading
+- [X] Chapter 6 - Light and Shading
 - [ ] Chapter 7 - Making a Scene
 - [ ] Chapter 8 - Shadows
 - [ ] Chapter 9 - Planes
