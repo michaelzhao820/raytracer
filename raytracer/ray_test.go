@@ -334,3 +334,144 @@ func TestRaySphereTransformIntersection(t *testing.T) {
 		}
 	})
 }
+
+func TestPrepareComputations(t *testing.T) {
+	t.Run("Precomputing the state of an intersection", func(t *testing.T) {
+		r := NewRay(
+			NewPoint(0, 0, -5),
+			NewVector(0, 0, 1),
+		)
+		shape := NewSphere()
+
+		i := Intersection{
+			t: 4,
+			o: shape,
+		}
+
+		comps := PrepareComputations(i, r)
+
+		if comps.t != i.GetTime() {
+			t.Errorf("Expected comps.t = %v, got %v", i.GetTime(), comps.t)
+		}
+
+		if comps.o != i.GetObject() {
+			t.Errorf("Expected comps.object to equal i.object")
+		}
+
+		expectedPoint := NewPoint(0, 0, -1)
+		if !comps.point.Equals(expectedPoint) {
+			t.Errorf("Expected comps.point = %v, got %v", expectedPoint, comps.point)
+		}
+
+		expectedEyeV := NewVector(0, 0, -1)
+		if !comps.eyev.Equals(expectedEyeV) {
+			t.Errorf("Expected comps.eyev = %v, got %v", expectedEyeV, comps.eyev)
+		}
+
+		expectedNormalV := NewVector(0, 0, -1)
+		if !comps.normalv.Equals(expectedNormalV) {
+			t.Errorf("Expected comps.normalv = %v, got %v", expectedNormalV, comps.normalv)
+		}
+	})
+	t.Run("The hit, when an intersection occurs on the outside", func(t *testing.T) {
+		r := NewRay(
+			NewPoint(0, 0, -5),
+			NewVector(0, 0, 1),
+		)
+		shape := NewSphere()
+
+		i := Intersection{
+			t: 4,
+			o: shape,
+		}
+
+		comps := PrepareComputations(i, r)
+
+		if comps.inside {
+			t.Errorf("Expected comps.inside = false, got true")
+		}
+	})
+
+	t.Run("The hit, when an intersection occurs on the inside", func(t *testing.T) {
+		r := NewRay(
+			NewPoint(0, 0, 0),
+			NewVector(0, 0, 1),
+		)
+		shape := NewSphere()
+
+		i := Intersection{
+			t: 1,
+			o: shape,
+		}
+
+		comps := PrepareComputations(i, r)
+
+		expectedPoint := NewPoint(0, 0, 1)
+		if !comps.point.Equals(expectedPoint) {
+			t.Errorf("Expected comps.point = %v, got %v", expectedPoint, comps.point)
+		}
+
+		expectedEyeV := NewVector(0, 0, -1)
+		if !comps.eyev.Equals(expectedEyeV) {
+			t.Errorf("Expected comps.eyev = %v, got %v", expectedEyeV, comps.eyev)
+		}
+
+		if !comps.inside {
+			t.Errorf("Expected comps.inside = true, got false")
+		}
+
+		expectedNormalV := NewVector(0, 0, -1)
+		if !comps.normalv.Equals(expectedNormalV) {
+			t.Errorf("Expected comps.normalv = %v, got %v", expectedNormalV, comps.normalv)
+		}
+	})
+}
+
+func TestWorldRay(t *testing.T) {
+	t.Run("The color when a ray misses", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		r := NewRay(NewPoint(0, 0, -5), NewVector(0, 1, 0)) // ray goes up, misses both spheres
+		c := w.ColorAt(r)
+
+		expected := NewColor(0, 0, 0)
+		if !c.Equals(expected) {
+			t.Errorf("Expected color = %v, got %v", expected, c)
+		}
+	})
+
+	t.Run("The color when a ray hits", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		r := NewRay(NewPoint(0, 0, -5), NewVector(0, 0, 1)) // ray hits the first sphere
+		c := w.ColorAt(r)
+
+		expected := NewColor(0.38066, 0.047583, 0.2855)
+		if !c.Equals(expected) {
+			t.Errorf("Expected color = %v, got %v", expected, c)
+		}
+	})
+
+	t.Run("The color with an intersection behind the ray", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		// Get references to the two spheres
+		outer := w.GetObjects()[0]
+		inner := w.GetObjects()[1]
+
+		// Set both ambient to 1 (force full material color contribution)
+		outer.GetMaterial().ambient = 1
+		inner.GetMaterial().ambient = 1
+
+		r := NewRay(NewPoint(0, 0, 0.75), NewVector(0, 0, -1)) // intersects both, inner closer
+		c := w.ColorAt(r)
+
+		expected := inner.GetMaterial().color
+		if !c.Equals(expected) {
+			t.Errorf("Expected color = %v, got %v", expected, c)
+		}
+	})
+}

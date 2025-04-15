@@ -18,6 +18,15 @@ type Intersection struct {
 	o Shape
 }
 
+type Computation struct {
+	t       float64
+	o       Shape
+	point   Tuple
+	eyev    Tuple
+	normalv Tuple
+	inside  bool
+}
+
 func (i Intersection) GetTime() float64 {
 	return i.t
 }
@@ -30,12 +39,38 @@ func NewRay(origin, direction Tuple) Ray {
 	return Ray{origin: origin, direction: direction}
 }
 
+func NewIntersection(T float64, o Shape) Intersection {
+	return Intersection{t: T, o: o}
+}
+
 func (r Ray) Position(t float64) (Tuple, error) {
 	return r.origin.Add(r.direction.Multiply(t))
 }
 
 func Intersections(args ...Intersection) []Intersection {
 	return args
+}
+
+func PrepareComputations(intersection Intersection, ray Ray) Computation {
+	comps := Computation{}
+	comps.t = intersection.t
+	comps.o = intersection.o
+	r, _ := ray.Position(comps.t)
+	comps.point = r
+	eye := ray.Direction().Multiply(-1)
+	comps.eyev = eye
+
+	normal := comps.o.NormalAt(comps.point)
+	comps.normalv = normal
+
+	dot, _ := Dot(comps.normalv, comps.eyev)
+	if dot < 0 {
+		comps.inside = true
+		comps.normalv = comps.normalv.Multiply(-1)
+	} else {
+		comps.inside = false
+	}
+	return comps
 }
 
 func Hit(args []Intersection) *Intersection {
