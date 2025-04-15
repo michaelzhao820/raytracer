@@ -29,6 +29,15 @@ func (m *Material) SetColor(r, g, b float64) {
 	m.color = NewColor(r, g, b)
 }
 
+func (m *Material) SetDiffuse(f float64) {
+	m.diffuse = f
+}
+
+func (m *Material) SetSpecular(f float64) {
+	m.specular = f
+
+}
+
 func Lighting(material Material, light Light, point, eyev, normalv Tuple) Color {
 	var diffuse, specular, ambient Color
 

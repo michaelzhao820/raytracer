@@ -37,3 +37,7 @@ func (s *Sphere) NormalAt(worldPoint Tuple) Tuple {
 	worldNormal, _ = worldNormal.Normalize()
 	return worldNormal
 }
+
+func (s *Sphere) SetMaterial(material *Material) {
+	s.material = material
+}
