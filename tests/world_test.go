@@ -97,7 +97,48 @@ func TestWorld(t *testing.T) {
 			t.Errorf("Expected shaded color = %v, got %v", expected, c)
 		}
 	})
+}
 
+func TestWorldShadows(t *testing.T) {
+	t.Run("There is no shadow when nothing is collinear with point and light", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		p := NewPoint(0, 10, 0)
+		if w.IsShadowed(p) {
+			t.Errorf("Expected point %v not to be in shadow", p)
+		}
+	})
+
+	t.Run("The shadow when an object is between the point and the light", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		p := NewPoint(10, -10, 10)
+		if !w.IsShadowed(p) {
+			t.Errorf("Expected point %v to be in shadow", p)
+		}
+	})
+
+	t.Run("There is no shadow when an object is behind the light", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		p := NewPoint(-20, 20, -20)
+		if w.IsShadowed(p) {
+			t.Errorf("Expected point %v not to be in shadow", p)
+		}
+	})
+
+	t.Run("There is no shadow when an object is behind the point", func(t *testing.T) {
+		w := NewWorld()
+		w.DefaultWorld()
+
+		p := NewPoint(-2, 2, -2)
+		if w.IsShadowed(p) {
+			t.Errorf("Expected point %v not to be in shadow", p)
+		}
+	})
 }
 
 func almostEqual(a, b float64) bool {
