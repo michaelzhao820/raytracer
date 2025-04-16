@@ -13,6 +13,7 @@ type Material struct {
 	diffuse   float64
 	specular  float64
 	shininess float64
+	Pattern   Pattern
 }
 
 func DefaultMaterial() *Material {
@@ -38,10 +39,21 @@ func (m *Material) SetSpecular(f float64) {
 
 }
 
-func Lighting(material Material, light Light, point, eyev, normalv Tuple, inShadow bool) Color {
-	var diffuse, specular, ambient Color
+func (m *Material) SetAmbient(f float64) {
+	m.ambient = f
 
-	effectiveColor := material.color.MultiplyOtherColor(light.Intensity)
+}
+
+func Lighting(material Material, object Shape, light Light, point, eyev, normalv Tuple, inShadow bool) Color {
+	var diffuse, specular, ambient, color Color
+
+	if material.Pattern != nil {
+		color = material.Pattern.PatternAtObject(object, point)
+	} else {
+		color = material.color
+	}
+
+	effectiveColor := color.MultiplyOtherColor(light.Intensity)
 
 	lightv, _ := light.Position.Subtract(point)
 	lightv, _ = lightv.Normalize()

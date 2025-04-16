@@ -75,7 +75,8 @@ func (w *World) IsShadowed(p Tuple) bool {
 }
 
 func (w *World) ShadeHits(comps Computation) Color {
-	return Lighting(*comps.o.GetMaterial(), *w.light, comps.point, comps.eyev, comps.normalv, w.IsShadowed(comps.overpoint))
+	return Lighting(*comps.o.GetMaterial(), comps.o, *w.light, comps.point, comps.eyev, comps.normalv,
+		w.IsShadowed(comps.overpoint))
 }
 
 func (w *World) SetLight(l *Light) {
