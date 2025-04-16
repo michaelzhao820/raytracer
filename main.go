@@ -16,37 +16,9 @@ func main() {
 	})
 
 	// Floor
-	floor := NewSphere()
-	tfm, _ := ScalingMatrix(10, 0.01, 10)
-	floor.SetTransform(tfm)
+	floor := NewPlane()
 	floor.GetMaterial().SetColor(1, 0.9, 0.9)
 	floor.GetMaterial().SetSpecular(0)
-
-	// Left Wall
-	leftWall := NewSphere()
-	leftTfm, _ := TranslationMatrix(0, 0, 5)
-	ryLeft, _ := RotationYMatrix(-math.Pi / 4)
-	rx, _ := RotationXMatrix(math.Pi / 2)
-	s, _ := ScalingMatrix(10, 0.01, 10)
-
-	lWallTfm, _ := leftTfm.MultiplyMatrices(ryLeft)
-	lWallTfm, _ = lWallTfm.MultiplyMatrices(rx)
-	lWallTfm, _ = lWallTfm.MultiplyMatrices(s)
-
-	leftWall.SetTransform(lWallTfm)
-	leftWall.SetMaterial(floor.GetMaterial())
-
-	// Right Wall
-	rightWall := NewSphere()
-	rightTfm, _ := TranslationMatrix(0, 0, 5)
-	ryRight, _ := RotationYMatrix(math.Pi / 4)
-
-	rWallTfm, _ := rightTfm.MultiplyMatrices(ryRight)
-	rWallTfm, _ = rWallTfm.MultiplyMatrices(rx)
-	rWallTfm, _ = rWallTfm.MultiplyMatrices(s)
-
-	rightWall.SetTransform(rWallTfm)
-	rightWall.SetMaterial(floor.GetMaterial())
 
 	// Middle Sphere
 	middle := NewSphere()
@@ -78,8 +50,6 @@ func main() {
 
 	// Add objects to world
 	world.AddObject(floor)
-	world.AddObject(leftWall)
-	world.AddObject(rightWall)
 	world.AddObject(middle)
 	world.AddObject(right)
 	world.AddObject(left)
