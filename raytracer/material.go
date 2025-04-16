@@ -38,7 +38,7 @@ func (m *Material) SetSpecular(f float64) {
 
 }
 
-func Lighting(material Material, light Light, point, eyev, normalv Tuple) Color {
+func Lighting(material Material, light Light, point, eyev, normalv Tuple, inShadow bool) Color {
 	var diffuse, specular, ambient Color
 
 	effectiveColor := material.color.MultiplyOtherColor(light.Intensity)
@@ -47,6 +47,9 @@ func Lighting(material Material, light Light, point, eyev, normalv Tuple) Color 
 	lightv, _ = lightv.Normalize()
 
 	ambient = effectiveColor.MultiplyByScalar(material.ambient)
+	if inShadow {
+		return ambient
+	}
 
 	lightDotNormal, _ := Dot(lightv, normalv)
 	if lightDotNormal < 0 {

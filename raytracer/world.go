@@ -50,6 +50,7 @@ func (w *World) ColorAt(r Ray) Color {
 func (w *World) IntersectWorld(r Ray) []Intersection {
 	var xs []Intersection
 	for _, object := range w.objects {
+		//We are in object space here to calculate the intersections!
 		xs = append(xs, r.Intersect(object)...)
 	}
 	sort.Slice(xs, func(i, j int) bool {
@@ -58,8 +59,23 @@ func (w *World) IntersectWorld(r Ray) []Intersection {
 	return xs
 }
 
+func (w *World) IsShadowed(p Tuple) bool {
+	v, _ := w.light.Position.Subtract(p)
+	distance, _ := v.Magnitude()
+	direction, _ := v.Normalize()
+
+	r := NewRay(p, direction)
+
+	xs := w.IntersectWorld(r)
+	h := Hit(xs)
+	if h != nil && h.GetTime() < distance {
+		return true
+	}
+	return false
+}
+
 func (w *World) ShadeHits(comps Computation) Color {
-	return Lighting(*comps.o.GetMaterial(), *w.light, comps.point, comps.eyev, comps.normalv)
+	return Lighting(*comps.o.GetMaterial(), *w.light, comps.point, comps.eyev, comps.normalv, w.IsShadowed(comps.overpoint))
 }
 
 func (w *World) SetLight(l *Light) {

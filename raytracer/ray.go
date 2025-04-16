@@ -19,12 +19,13 @@ type Intersection struct {
 }
 
 type Computation struct {
-	t       float64
-	o       Shape
-	point   Tuple
-	eyev    Tuple
-	normalv Tuple
-	inside  bool
+	t         float64
+	o         Shape
+	point     Tuple
+	eyev      Tuple
+	normalv   Tuple
+	inside    bool
+	overpoint Tuple
 }
 
 func (i Intersection) GetTime() float64 {
@@ -52,6 +53,8 @@ func Intersections(args ...Intersection) []Intersection {
 }
 
 func PrepareComputations(intersection Intersection, ray Ray) Computation {
+	epsilon := 0.00001
+
 	comps := Computation{}
 	comps.t = intersection.t
 	comps.o = intersection.o
@@ -70,6 +73,10 @@ func PrepareComputations(intersection Intersection, ray Ray) Computation {
 	} else {
 		comps.inside = false
 	}
+
+	add, _ := comps.point.Add(comps.normalv.Multiply(epsilon))
+	comps.overpoint = add
+
 	return comps
 }
 
@@ -103,6 +110,10 @@ func (r Ray) Intersect(s Shape) []Intersection {
 		return []Intersection{{t: t1, o: s}, {t: t2, o: s}}
 	}
 }
+
+// Transform applies the given matrix to the ray, returning a new ray.
+// This is used to convert a world-space ray into object space
+// by applying the inverse of the object's transform matrix.
 
 func (r Ray) Transform(m Matrix) Ray {
 	origin, _ := m.MultiplyWithTuple(r.origin)

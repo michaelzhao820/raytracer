@@ -92,7 +92,6 @@ func main() {
 		NewVector(0, 1, 0),
 	))
 
-	// Render and save
 	if err := camera.Render(*world); err != nil {
 		log.Fatalf("Render failed: %v", err)
 	}
