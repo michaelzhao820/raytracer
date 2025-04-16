@@ -29,15 +29,28 @@ func (p *Plane) GetMaterial() *Material {
 }
 
 func (p *Plane) NormalAt(worldPoint Tuple) Tuple {
-	return NewVector(0, 1, 0)
+
+	localNormal := NewVector(0, 1, 0)
+
+	//convert back into world space
+	tm, _ := p.GetTransformMatrix().Inverse()
+	tmt, _ := tm.Transpose()
+	worldNormal, _ := tmt.MultiplyWithTuple(localNormal)
+	worldNormal[W] = 0
+	worldNormal, _ = worldNormal.Normalize()
+	return worldNormal
 }
 
 func (p *Plane) Intersect(r Ray) []Intersection {
-	if math.Abs(r.direction[Y]) < EPSILON {
+	//Convert ray into object space
+	inv, _ := p.transform.Inverse()
+	localRay := r.Transform(inv)
+
+	if math.Abs(localRay.direction[Y]) < EPSILON {
 		return nil
 	}
 	return []Intersection{{
-		t: -r.origin[Y] / r.direction[Y],
+		t: -localRay.origin[Y] / localRay.direction[Y],
 		o: p,
 	}}
 }
