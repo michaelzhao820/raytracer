@@ -106,7 +106,7 @@ func TestRaySphereIntersection(t *testing.T) {
 		r := NewRay(NewPoint(0, 0, -5), NewVector(0, 0, 1))
 		s := NewSphere()
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 2 {
 			t.Errorf("Expected 2 intersections, got %d", len(xs))
@@ -125,7 +125,7 @@ func TestRaySphereIntersection(t *testing.T) {
 		r := NewRay(NewPoint(0, 1, -5), NewVector(0, 0, 1))
 		s := NewSphere()
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 2 {
 			t.Errorf("Expected 2 intersections, got %d", len(xs))
@@ -144,7 +144,7 @@ func TestRaySphereIntersection(t *testing.T) {
 		r := NewRay(NewPoint(0, 2, -5), NewVector(0, 0, 1))
 		s := NewSphere()
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 0 {
 			t.Errorf("Expected 0 intersections, got %d", len(xs))
@@ -155,7 +155,7 @@ func TestRaySphereIntersection(t *testing.T) {
 		r := NewRay(NewPoint(0, 0, 0), NewVector(0, 0, 1))
 		s := NewSphere()
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 2 {
 			t.Errorf("Expected 2 intersections, got %d", len(xs))
@@ -174,7 +174,7 @@ func TestRaySphereIntersection(t *testing.T) {
 		r := NewRay(NewPoint(0, 0, 5), NewVector(0, 0, 1))
 		s := NewSphere()
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 2 {
 			t.Errorf("Expected 2 intersections, got %d", len(xs))
@@ -193,7 +193,7 @@ func TestRaySphereIntersection(t *testing.T) {
 		r := NewRay(NewPoint(0, 0, -5), NewVector(0, 0, 1))
 		s := NewSphere()
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 2 {
 			t.Errorf("Expected 2 intersections, got %d", len(xs))
@@ -308,7 +308,7 @@ func TestRaySphereTransformIntersection(t *testing.T) {
 		sm, _ := ScalingMatrix(2, 2, 2)
 		s.SetTransform(sm)
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 2 {
 			t.Fatalf("Expected 2 intersections, got %d", len(xs))
@@ -327,7 +327,7 @@ func TestRaySphereTransformIntersection(t *testing.T) {
 		tm, _ := TranslationMatrix(5, 0, 0)
 		s.SetTransform(tm)
 
-		xs := r.Intersect(s)
+		xs := s.Intersect(r)
 
 		if len(xs) != 0 {
 			t.Fatalf("Expected 0 intersections, got %d", len(xs))

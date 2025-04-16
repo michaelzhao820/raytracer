@@ -51,7 +51,7 @@ func (w *World) IntersectWorld(r Ray) []Intersection {
 	var xs []Intersection
 	for _, object := range w.objects {
 		//We are in object space here to calculate the intersections!
-		xs = append(xs, r.Intersect(object)...)
+		xs = append(xs, object.Intersect(r)...)
 	}
 	sort.Slice(xs, func(i, j int) bool {
 		return xs[i].t < xs[j].t

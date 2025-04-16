@@ -11,6 +11,7 @@ type Shape interface {
 	GetTransformMatrix() Matrix
 	NormalAt(x Tuple) Tuple
 	GetMaterial() *Material
+	Intersect(ray Ray) []Intersection
 }
 
 type Intersection struct {
@@ -90,25 +91,6 @@ func Hit(args []Intersection) *Intersection {
 		}
 	}
 	return returnIntersection
-}
-
-func (r Ray) Intersect(s Shape) []Intersection {
-	m, _ := s.GetTransformMatrix().Inverse()
-	r2 := r.Transform(m)
-	sphereToRay, _ := r2.origin.Subtract(NewPoint(0, 0, 0))
-	a, _ := Dot(r2.Direction(), r2.Direction())
-	b, _ := Dot(r2.Direction(), sphereToRay)
-	b *= 2
-	c, _ := Dot(sphereToRay, sphereToRay)
-	c -= 1
-	discriminant := b*b - 4*a*c
-	if discriminant < 0 {
-		return nil
-	} else {
-		t1 := (-1*b - math.Sqrt(discriminant)) / (2 * a)
-		t2 := (-1*b + math.Sqrt(discriminant)) / (2 * a)
-		return []Intersection{{t: t1, o: s}, {t: t2, o: s}}
-	}
 }
 
 // Transform applies the given matrix to the ray, returning a new ray.
