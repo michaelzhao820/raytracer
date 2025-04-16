@@ -11,7 +11,7 @@ A Go implementation of the ray tracer described in [The Ray Tracer Challenge](ht
 - [X] Chapter 5 - Ray-Sphere Intersections
 - [X] Chapter 6 - Light and Shading
 - [X] Chapter 7 - Making a Scene
-- [ ] Chapter 8 - Shadows
+- [X] Chapter 8 - Shadows
 - [ ] Chapter 9 - Planes
 - [ ] Chapter 10 - Patterns
 - [ ] Chapter 11 - Reflection and Refraction
