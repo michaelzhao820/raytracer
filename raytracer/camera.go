@@ -45,15 +45,39 @@ func calculatePixelSize(hsize float64, vsize float64, fieldOfView float64) float
 	return (computeHalfWidth(hsize, vsize, fieldOfView) * 2) / hsize
 }
 
+// rayForPixel generates a ray in world space that starts at the camera's position
+// and passes through the center of the specified pixel (px, py) on the virtual canvas.
+//
+// The camera assumes a default orientation where it is positioned at the origin,
+// looking straight down the negative Z axis, with +Y as "up". The canvas is placed
+// at z = -1 in this camera-local coordinate system.
+//
+// The pixel loop (in Render) iterates over camera-local canvas coordinates, with
+// (0,0) referring to the upper-left corner of the canvas. Each (px, py) refers to a
+// pixel in this local grid.
+//
+// To determine where in the world this pixel lies, we compute its position in camera
+// space (worldX, worldY, -1), and then apply the inverse of the camera's view
+// transformation. This effectively transforms the point from camera space into
+// world space — i.e., it answers: "Where is this pixel in the actual world, given the
+// camera’s position and orientation?"
+//
+// Similarly, the camera's local origin (0,0,0) is transformed into world space to find
+// the ray's true world-space origin.
+//
+// Finally, the ray is created with the world-space origin and a direction pointing
+// toward the world-space pixel, normalized to ensure a unit-length direction vector.
+
 func (c *Camera) rayForPixel(px, py float64) Ray {
 	xoffset := (px + 0.5) * c.pixelSize
 	yoffset := (py + 0.5) * c.pixelSize
 
-	worldX := c.halfWidth - xoffset
-	worldY := c.halfHeight - yoffset
+	cameraX := c.halfWidth - xoffset
+	cameraY := c.halfHeight - yoffset
 
 	pointTM, _ := c.transform.Inverse()
-	pixel, _ := pointTM.MultiplyWithTuple(NewPoint(worldX, worldY, -1))
+
+	pixel, _ := pointTM.MultiplyWithTuple(NewPoint(cameraX, cameraY, -1))
 	origin, _ := pointTM.MultiplyWithTuple(NewPoint(0, 0, 0))
 
 	direction, _ := pixel.Subtract(origin)
