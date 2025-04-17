@@ -93,7 +93,7 @@ func (c *Camera) Render(w World) error {
 	for y := 0; y < int(c.vsize); y++ {
 		for x := 0; x < int(c.hsize); x++ {
 			ray := c.rayForPixel(float64(x), float64(y))
-			color := w.ColorAt(ray)
+			color := w.ColorAt(ray, 4)
 			image.WritePixel(x, y, color)
 		}
 	}

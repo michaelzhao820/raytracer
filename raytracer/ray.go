@@ -27,6 +27,7 @@ type Computation struct {
 	normalv   Tuple
 	inside    bool
 	overpoint Tuple
+	reflectv  Tuple
 }
 
 func (i Intersection) GetTime() float64 {
@@ -78,6 +79,8 @@ func PrepareComputations(intersection Intersection, ray Ray) Computation {
 	add, _ := comps.point.Add(comps.normalv.Multiply(epsilon))
 	comps.overpoint = add
 
+	reflectv, _ := Reflect(ray.Direction(), comps.normalv)
+	comps.reflectv = reflectv
 	return comps
 }
 

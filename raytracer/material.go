@@ -8,21 +8,23 @@ type Light struct {
 }
 
 type Material struct {
-	color     Color
-	ambient   float64
-	diffuse   float64
-	specular  float64
-	shininess float64
-	Pattern   Pattern
+	color      Color
+	ambient    float64
+	diffuse    float64
+	specular   float64
+	shininess  float64
+	Pattern    Pattern
+	reflective float64
 }
 
 func DefaultMaterial() *Material {
 	return &Material{
-		color:     NewColor(1, 1, 1),
-		ambient:   0.1,
-		diffuse:   0.9,
-		specular:  0.9,
-		shininess: 200.0,
+		color:      NewColor(1, 1, 1),
+		ambient:    0.1,
+		diffuse:    0.9,
+		specular:   0.9,
+		shininess:  200.0,
+		reflective: 0.0,
 	}
 }
 
@@ -42,6 +44,14 @@ func (m *Material) SetSpecular(f float64) {
 func (m *Material) SetAmbient(f float64) {
 	m.ambient = f
 
+}
+
+func (m *Material) SetReflective(f float64) {
+	m.reflective = f
+}
+
+func (m *Material) SetShininess(f float64) {
+	m.shininess = f
 }
 
 func Lighting(material Material, object Shape, light Light, point, eyev, normalv Tuple, inShadow bool) Color {
